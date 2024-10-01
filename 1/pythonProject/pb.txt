@@ -1,0 +1,5 @@
+1. You have a list with numbers. Compute the mean of this list.
+2. You have a list of numbers. Create two lists: the list of positives and a list of negatives.
+3. You have a list. Compute the sum of the first n-2 elements.
+4. You have a list. Compute a list that contains all the elements from the odd positions.
+5. You have a list of numbers. Find the minimum element of the list without using the min function.
