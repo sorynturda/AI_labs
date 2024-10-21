@@ -1,4 +1,8 @@
 import random
+import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+from signal import sigwait
 
 
 class Node():
@@ -10,6 +14,12 @@ class Node():
     def edge(self, node):
         self.neighbours.append(node)
 
+    def getEdges(self):
+        a = []
+        for i in self.neighbours:
+            a.append([self.vertex_number, i])
+        return a
+
     def printNeighbours(self):
         for neighbour in self.neighbours:
             print(self, neighbour, sep='->')
@@ -17,6 +27,13 @@ class Node():
     def getOutDegree(self):
         return len(self.neighbours)
 
+    def getVertexNumber(self):
+        return self.vertex_number
+
+    def removeNeighbours(self):
+        factor = int(len(self.neighbours) * 0.8)
+        for i in range(factor):
+            self.neighbours.remove(random.choice(self.neighbours))
     def __str__(self):
         return f'({self.vertex_number})'
 
@@ -38,11 +55,19 @@ with open("graph1.txt", 'r') as f:
 highestDegree = -1e9
 for i in range(len(nodes)-1):
     highestDegree = max(highestDegree, nodes[i+1].getOutDegree())
-print(highestDegree)
+# print(highestDegree)
 
-subgraphNodes = random.choices(nodes, k=int((len(nodes))*0.6))
-for node in subgraphNodes:
-    print(node)
+subgraphNodes = list(set(random.choices(nodes[1:len(nodes)+1], k=int((len(nodes)-1)*0.6))))
+
+a = []
+for it in subgraphNodes:
+    for pair in it.getEdges():
+        a.append(pair)
+
+A = np.matrix(a)
+G = nx.from_numpy_array(A)
+nx.draw(G)
+plt.show()
 
 # for i in range(7):
 #     nodes.append(Node(i))
