@@ -22,6 +22,7 @@ import util
 from game import Directions, Configuration
 from typing import List
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -65,8 +66,6 @@ class SearchProblem:
         util.raiseNotDefined()
 
 
-
-
 def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -74,7 +73,8 @@ def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     """
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """
@@ -94,30 +94,45 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     stack = util.Stack()
     node = problem.getStartState()
     visited = set()
-    stack.push(node)
+    stack.push((node, []))
     while not stack.isEmpty():
-        current = stack.pop()
-        res.append(problem.getSuccessors(current)[0][1])
-        if current not in visited:
-            visited.add(current)
-            if problem.isGoalState(current):
-                break
-            for position, direction, cost in problem.getSuccessors(current):
+        pos, path = stack.pop()
+        if pos not in visited:
+            visited.add(pos)
+            if problem.isGoalState(pos):
+                print(path)
+                return path
+            for position, direction, cost in problem.getSuccessors(pos):
                 if position not in visited:
-                    stack.push(position)
-    # print(res)
-    return res
-    # util.raiseNotDefined()
+                    stack.push((position, path + [direction]))
+    return []
+
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    res = []
+    queue = util.Queue()
+    node = problem.getStartState()
+    visited = set()
+    queue.push((node, []))
+    while not queue.isEmpty():
+        pos, path = queue.pop()
+        if pos not in visited:
+            visited.add(pos)
+            if problem.isGoalState(pos):
+                print(path)
+                return path
+            for position, direction, cost in problem.getSuccessors(pos):
+                if position not in visited:
+                    queue.push((position, path + [direction]))
+    return []
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
+
 
 def nullHeuristic(state, problem=None) -> float:
     """
@@ -126,10 +141,12 @@ def nullHeuristic(state, problem=None) -> float:
     """
     return 0
 
+
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
+
 
 # Abbreviations
 bfs = breadthFirstSearch
