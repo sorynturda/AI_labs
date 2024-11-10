@@ -100,7 +100,6 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
         if pos not in visited:
             visited.add(pos)
             if problem.isGoalState(pos):
-                print(path)
                 return path
             for position, direction, cost in problem.getSuccessors(pos):
                 if position not in visited:
@@ -121,7 +120,6 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
         if pos not in visited:
             visited.add(pos)
             if problem.isGoalState(pos):
-                print(path)
                 return path
             for position, direction, cost in problem.getSuccessors(pos):
                 if position not in visited:
