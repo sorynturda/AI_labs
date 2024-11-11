@@ -90,7 +90,6 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    res = []
     stack = util.Stack()
     node = problem.getStartState()
     visited = set()
@@ -110,7 +109,6 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    res = []
     queue = util.Queue()
     node = problem.getStartState()
     visited = set()
@@ -128,8 +126,21 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queue = util.PriorityQueue()
+    node = problem.getStartState()
+    visited = set()
+    queue.update((node, [], 0), 0)
+    while not queue.isEmpty():
+        pos, path, sum = queue.pop()
+        if pos not in visited:
+            visited.add(pos)
+            if problem.isGoalState(pos):
+                print(path, sum)
+                return path
+            for position, direction, cost in problem.getSuccessors(pos):
+                if position not in visited:
+                    queue.update((position, path + [direction], sum + cost), sum + cost)
+    return []
 
 
 def nullHeuristic(state, problem=None) -> float:
