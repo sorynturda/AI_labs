@@ -135,7 +135,6 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
         if pos not in visited:
             visited.add(pos)
             if problem.isGoalState(pos):
-                print(path, sum)
                 return path
             for position, direction, cost in problem.getSuccessors(pos):
                 if position not in visited:
@@ -148,13 +147,26 @@ def nullHeuristic(state, problem=None) -> float:
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
-    return 0
+    util.raiseNotDefined()
 
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    node = problem.getStartState()
+    queue = util.PriorityQueue()
+    visited = {node: 0}
+    queue.update((node, [], 0), heuristic(node, problem))
+    while not queue.isEmpty():
+        pos, path, sum = queue.pop()
+        if problem.isGoalState(pos):
+            return path
+        for successor, direction, cost in problem.getSuccessors(pos):
+            new_cost = cost + sum
+            if pos not in visited or new_cost < visited[pos]:
+                visited[successor] = new_cost
+                queue.push((successor, path + [direction], new_cost), new_cost + heuristic(successor, problem))
+    return []
 
 
 # Abbreviations
