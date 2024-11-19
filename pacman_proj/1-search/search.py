@@ -124,6 +124,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
                     queue.push((position, path + [direction]))
     return []
 
+
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     queue = util.PriorityQueue()
@@ -147,26 +148,23 @@ def nullHeuristic(state, problem=None) -> float:
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
-    util.raiseNotDefined()
-
+    return 0;
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    node = problem.getStartState()
+    start = problem.getStartState()
     queue = util.PriorityQueue()
-    visited = {node: 0}
-    queue.update((node, [], 0), heuristic(node, problem))
+    bestCost = {start: 0}
+    queue.push((start, []), 0)
     while not queue.isEmpty():
-        pos, path, sum = queue.pop()
+        pos, path = queue.pop()
         if problem.isGoalState(pos):
             return path
         for successor, direction, cost in problem.getSuccessors(pos):
-            new_cost = cost + sum
-            if pos not in visited or new_cost < visited[pos]:
-                visited[successor] = new_cost
-                queue.push((successor, path + [direction], new_cost), new_cost + heuristic(successor, problem))
-    return []
+            if bestCost[pos] + cost < bestCost.setdefault(successor, 2**31 - 1):
+                bestCost[successor] = cost + bestCost[pos]
+                queue.update((successor, path + [direction]), bestCost[pos] + cost + heuristic(successor, problem))
 
 
 # Abbreviations
