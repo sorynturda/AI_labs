@@ -162,7 +162,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
         if problem.isGoalState(pos):
             return path
         for successor, direction, cost in problem.getSuccessors(pos):
-            if bestCost[pos] + cost < bestCost.setdefault(successor, 2**31 - 1):
+            if bestCost[pos] + cost < bestCost.setdefault(successor, 1e9):
                 bestCost[successor] = cost + bestCost[pos]
                 queue.update((successor, path + [direction]), bestCost[pos] + cost + heuristic(successor, problem))
 

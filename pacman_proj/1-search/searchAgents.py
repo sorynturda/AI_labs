@@ -33,7 +33,8 @@ description for details.
 
 Good luck and happy searching!
 """
-
+import math
+from fileinput import close
 from typing import List, Tuple, Any
 from game import Directions
 from game import Agent
@@ -482,7 +483,34 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+
+    foodPosition = foodGrid.asList()
+    res = 0
+    if len(foodPosition) == 0:
+        return 0
+    if len(foodPosition) == 1:
+        return manhattanDistance(position, foodPosition[0])
+
+    closest_food_distance = 1e9
+    for food in foodPosition:
+        closest_food_distance = min(closest_food_distance, manhattanDistance(position, food))
+
+    closest_food = foodPosition[0]
+    while foodPosition:
+        next_closest_food = foodPosition[0]
+        next_min_distance = 1e9
+
+        for food in foodPosition:
+            current_distance = manhattanDistance(closest_food, food)
+            if current_distance < next_min_distance:
+                next_min_distance = current_distance
+                next_closest_food = food
+
+        closest_food = next_closest_food
+        res += next_min_distance
+        foodPosition.remove(next_closest_food)
+
+    return closest_food_distance + res
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -515,8 +543,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        return search.aStarSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -552,7 +579,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x, y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]
 
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
