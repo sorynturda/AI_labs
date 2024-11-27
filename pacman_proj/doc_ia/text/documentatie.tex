@@ -36,18 +36,16 @@ Astfel se poate utiliza o \textbf{lista neumerotata}:
 % figurilor sa fie de forma "fig:nume_figura"
 Daca vrem sa referim imaginea \ref{fig:figura1} in text se procedeaza astfel.
 
-\par Asa se adauga \textbf{cod}:
-\inputminted[linenos]{python}{code/fibo.py}
-
 
 \section{Uninformed search}
-\subsection{Question 1 - Gasirea unui punct unde se afla mancare folosind Depth First Search}
+\subsection{Question 1 - Gasirea unui punct unde se afla mancare folosind Depth-First Search}
 % definire cerinta
 \par Gasirea unui punct unde se afla mancare folosind Depth First Search
-\par \textbf{Depth First Search} este un algoritm utilizat pentru explorarea grafurilor sau arborilor. Scopul acestuia este de a traversa toate nodurile unui graf, urmărind o cale cât mai adâncă înainte de a reveni și a explora căile neexplorate.
+\par \textbf{Depth-First Search} este un algoritm utilizat pentru explorarea grafurilor sau arborilor. Scopul acestuia este de a traversa toate nodurile unui graf, urmărind o cale cât mai adâncă înainte de a reveni și a explora căile neexplorate.
 % prezentare algoritm/metoda
+
 \begin{algorithm}
-\caption{Iterative Depth First Search (DFS)}
+\caption{Iterative Depth-First Search (DFS)}
 \begin{algorithmic}[1]
 \Procedure{IterativeDFS}{$G, v$}
     \State Initialize an empty stack $S$
@@ -67,15 +65,34 @@ Daca vrem sa referim imaginea \ref{fig:figura1} in text se procedeaza astfel.
 \end{algorithm}
 
 % optional prezentare cod
-\par Cod \textbf{DFS}
-\inputminted[linenos]{python}{code/dfs.py}
 % optional explicatii suplimentare cod
+
 % comentarii/observatii asupra performantei/rezultatelor/complexitatii/algoritmului
 
 \subsection{Question 2 - Breadth-first search}
+\par \textbf{Breadth-first search} este un algoritm utilizat pentru traversarea și căutarea în grafuri sau arbori. Spre deosebire de DFS, BFS explorează nodurile pe niveluri, adică parcurge mai întâi toate nodurile aflate la o anumită distanță de nodul de start înainte de a trece la nodurile mai îndepărtate. BFS este implementat utilizând o coadă pentru a gestiona ordinea vizitării nodurilor.
 % TODO: de completat
 % + q3 din project 1
 
+\begin{algorithm}
+\caption{Breadth First Search (BFS)}
+\begin{algorithmic}[1]
+\Procedure{BFS}{$G, s$} \Comment{$G$ is the graph, $s$ is the starting node}
+    \State Initialize an empty queue $Q$
+    \State Enqueue $s$ into $Q$
+    \State Mark $s$ as visited
+    \While{$Q$ is not empty}
+        \State $u \gets$ \Call{Dequeue}{$Q$}
+        \For{each neighbor $v$ of $u$ in $G$}
+            \If{$v$ is not visited}
+                \State Enqueue $v$ into $Q$
+                \State Mark $v$ as visited
+            \EndIf
+        \EndFor
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 \section{Informed search}
 % q4 - q8 din project 1
 \subsection{Question 4 - A* search  algorithm}
