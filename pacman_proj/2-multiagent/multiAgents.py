@@ -114,7 +114,7 @@ class MultiAgentSearchAgent(Agent):
     is another abstract class.
     """
 
-    def __init__(self, evalFn='scoreEvaluationFunction', depth='2'):
+    def __init__(self, evalFn='scoreEvaluationFunction', depth='3'):
         self.index = 0  # Pacman is always agent index 0
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
@@ -152,28 +152,32 @@ class MinimaxAgent(MultiAgentSearchAgent):
         # util.raiseNotDefined()
         legalActions = gameState.getLegalActions(0)
         def minimax(agent, depth, gameState):
-            if gameState.isLose() or gameState.isWin() or depth == self.depth:  # return the utility in case the defined depth is reached or the game is won/lost.
+            if gameState.isLose() or gameState.isWin() or depth == self.depth:  # conditia de oprire
                 return self.evaluationFunction(gameState)
-            if agent == 0:  # maximize for pacman
-                return max(minimax(1, depth, gameState.generateSuccessor(agent, newState)) for newState in gameState.getLegalActions(agent))
-            else:  # minize for ghosts
-                nextAgent = agent + 1  # calculate the next agent and increase depth accordingly.
-                if gameState.getNumAgents() == nextAgent:
-                    nextAgent = 0
-                if nextAgent == 0:
-                   depth += 1
-                return min(minimax(nextAgent, depth, gameState.generateSuccessor(agent, newState)) for newState in gameState.getLegalActions(agent))
+            if agent == 0:  # max pentru pacman, urmatorul agent are tot timpul indexul 1
+                mx = -float("inf")
+                for newState in gameState.getLegalActions(agent):
+                    mx=max(mx, minimax(1, depth, gameState.generateSuccessor(agent,newState)))
+                return mx
+            else:  # min pentru fantome
+                mn = float("inf")
+                nextAgent = (agent + 1) % gameState.getNumAgents()
+                if not nextAgent: # adancimea creste cand se ajunge inapoi la pacman
+                    depth += 1
+                for newState in gameState.getLegalActions(agent):
+                    mn = min(mn, minimax(nextAgent, depth, gameState.generateSuccessor(agent, newState)))
+                return mn
 
-        """Performing maximize action for the root node i.e. pacman"""
+
         maximum = float("-inf")
-        action = Directions.WEST
-        for agentState in gameState.getLegalActions(0):
-            utility = minimax(1, 0, gameState.generateSuccessor(0, agentState))
-            if utility > maximum or maximum == float("-inf"):
+        best_action = Directions.SOUTH
+        for action in gameState.getLegalActions(0):
+            utility = minimax(1, 0, gameState.generateSuccessor(0, action))
+            if utility > maximum:
                 maximum = utility
-                action = agentState
+                best_action = action
 
-        return action
+        return best_action
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
