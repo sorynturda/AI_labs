@@ -114,7 +114,7 @@ class MultiAgentSearchAgent(Agent):
     is another abstract class.
     """
 
-    def __init__(self, evalFn='scoreEvaluationFunction', depth='3'):
+    def __init__(self, evalFn='scoreEvaluationFunction', depth='2'):
         self.index = 0  # Pacman is always agent index 0
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
@@ -190,7 +190,43 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
+        legalActions = gameState.getLegalActions(0)
+        def minimax(agent, depth, gameState, alfa, beta):
+            if gameState.isLose() or gameState.isWin() or depth == self.depth:  # conditia de oprire
+                return self.evaluationFunction(gameState)
+            if agent == 0:  # max pentru pacman, urmatorul agent are tot timpul indexul 1
+                mx = -float("inf")
+                for newState in gameState.getLegalActions(agent):
+                    mx = max(mx, minimax(1, depth, gameState.generateSuccessor(agent,newState), alfa,  beta))
+                    if mx > beta: 
+                        return mx
+                    alfa = max(alfa, mx)
+                return mx
+            else:  # min pentru fantome
+                mn = float("inf")
+                nextAgent = (agent + 1) % gameState.getNumAgents()
+                if not nextAgent: # adancimea creste cand se ajunge inapoi la pacman
+                    depth += 1
+                for newState in gameState.getLegalActions(agent):
+                    mn = min(mn, minimax(nextAgent, depth, gameState.generateSuccessor(agent, newState), alfa, beta))
+                    if mn < alfa:
+                        return mn
+                    beta = min(beta, mn)
+                return mn
+
+
+        maximum = float("-inf")
+        alfa, beta = -float("inf"), float("inf")
+        best_action = Directions.SOUTH
+        for action in gameState.getLegalActions(0):
+            utility = minimax(1, 0, gameState.generateSuccessor(0, action), alfa, beta)
+            if utility > maximum:
+                maximum = utility
+                best_action = action
+            alfa = max(alfa, maximum) # actualizare alfa deoarece suntem in cazul: pacman alege
+        return best_action
+
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
