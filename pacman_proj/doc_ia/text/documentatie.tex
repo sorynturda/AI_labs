@@ -1,42 +1,3 @@
-\section{Tutorial}  % titlu principal
-
-\subsection{Subtitlu 1}  % subtitlu
-\lipsum[1-2] % doar pentru exemplu, adauga textul ala in latina
-
-\subsubsection{Subsubtitlu} % subtitlu la subtitlu
-\par Born into the noble Crownguard family, along with his younger sister Lux, Garen knew from an early age that he would be expected to defend the throne of Demacia with his life. His father, Pieter, was a decorated military officer, while his aunt Tianna was Sword-Captain of the elite Dauntless Vanguard—and both were recognized and greatly respected by King Jarvan III. It was assumed that Garen would eventually come to serve the king’s son in the same manner.
-
-\subsection{Tutorial elemente de baza}
-\par O propozitie normala. Daca vrem sa adaugam text in \textbf{bold}, \textit{italic} sau \textbf{\textit{bold italic}}. \\ % cele doua backslash-uri sunt pentru a trece la un rand nou
-Astfel se poate utiliza o \textbf{lista numerotata}:
-
-% lista numerotata
-\begin{enumerate}
-    \item primul element
-    \item al doilea element
-    \item al treilea element
-\end{enumerate}
-Astfel se poate utiliza o \textbf{lista neumerotata}:
-
-% lista neumerotata
-\begin{itemize}
-    \item primul element
-    \item al doilea element
-    \item al treilea element
-\end{itemize}
-
-\par Asa se adauga o \textbf{imagine}.
-\begin{figure}[H]
-    \centering  % centrare imagine
-    \includegraphics[scale=0.35]{resources/see_image.jpg}  % scale este factorul de scalare al imaginii originale
-    \caption{Baba Voss}  % titlu imagine
-    \label{fig:figura1} % label pentru referire
-\end{figure}
-% fig:figura1 este numele label-ului. Se putea folosi pur si simplu si "gigel", insa este o conventie ca label-urile
-% figurilor sa fie de forma "fig:nume_figura"
-Daca vrem sa referim imaginea \ref{fig:figura1} in text se procedeaza astfel.
-
-
 \section{Uninformed search}
 \subsection{Question 1 - Gasirea unui punct unde se afla mancare folosind Depth-First Search}
 % definire cerinta
@@ -45,29 +6,57 @@ Daca vrem sa referim imaginea \ref{fig:figura1} in text se procedeaza astfel.
 % prezentare algoritm/metoda
 
 \begin{algorithm}
-\caption{Iterative Depth-First Search (DFS)}
+\caption{Depth First Search}
 \begin{algorithmic}[1]
-\Procedure{IterativeDFS}{$G, v$}
-    \State Initialize an empty stack $S$
-    \State Push $v$ onto $S$
-    \State Mark $v$ as visited
-    \While{$S$ is not empty}
-        \State $u \gets$ \Call{Pop}{$S$}
-        \For{each neighbor $w$ of $u$ in $G$}
-            \If{$w$ is not visited}
-                \State Push $w$ onto $S$
-                \State Mark $w$ as visited
+\Function{DFS}{problem}
+    \State stack $\gets$ Stack()
+    \State visited $\gets \emptyset$
+    \State node $\gets$ problem.getStartState()
+    \State stack.push((node, [ ]))
+    
+    \While{not stack.isEmpty()}
+        \State position, path $\gets$ stack.pop()
+        \If{position $\notin$ visited}
+            \State visited.add(position)
+            \If{problem.isGoalState(position)}
+                \Return path
             \EndIf
-        \EndFor
-    \EndWhile
-\EndProcedure
+            \For{(successor, direction, cost) in problem.getSuccessors(position)}
+                \If{successor $\notin$ visited}
+                    \State stack.push((successor, path + [direction]))
+                \EndIf
+            \EndFor
+        \EndIf
+    \EndWhile \\
+    \Return [ ]
+\EndFunction
 \end{algorithmic}
 \end{algorithm}
-
 % optional prezentare cod
 % optional explicatii suplimentare cod
 
 % comentarii/observatii asupra performantei/rezultatelor/complexitatii/algoritmului
+\par Complexitatea algoritmului în:
+
+\begin{itemize}
+    \item Timp: $O(b^m)$ unde b este factorul de ramificare (numarul mediu de succesori) si d este adancimea maxima a arborelui
+    \item Spațiu: $O(b*m)$ - trebuie sa stocam nodurile de pe calea curenta plus nodurile de pe acelasi nivel 
+\end{itemize}
+
+\par Avantaje:
+\begin{itemize}
+	\item Implementare simpla si intuitiva
+	\item Necesita mai putina memorie decat BFS deoarece exploreaza in adancime
+	\item Poate gasi rapid o solutie daca aceasta se afla pe o ramura explorata devreme
+\end{itemize}
+
+\par Dezavantaje:
+\begin{itemize}
+	\item Nu garanteaza gasirea celui mai scurt drum
+	\item Poate ramane blocata explorând cai foarte lungi/infinite daca nu se implementeaza detectia ciclurilor
+\end{itemize}
+
+\pagebreak
 
 \subsection{Question 2 - Breadth-first search}
 \par \textbf{Breadth-first search} este un algoritm utilizat pentru traversarea și căutarea în grafuri sau arbori. Spre deosebire de DFS, BFS explorează nodurile pe niveluri, adică parcurge mai întâi toate nodurile aflate la o anumită distanță de nodul de start înainte de a trece la nodurile mai îndepărtate. BFS este implementat utilizând o coadă pentru a gestiona ordinea vizitării nodurilor.
@@ -75,28 +64,125 @@ Daca vrem sa referim imaginea \ref{fig:figura1} in text se procedeaza astfel.
 % + q3 din project 1
 
 \begin{algorithm}
-\caption{Breadth First Search (BFS)}
+\caption{Breadth First Search}
 \begin{algorithmic}[1]
-\Procedure{BFS}{$G, s$} \Comment{$G$ is the graph, $s$ is the starting node}
-    \State Initialize an empty queue $Q$
-    \State Enqueue $s$ into $Q$
-    \State Mark $s$ as visited
-    \While{$Q$ is not empty}
-        \State $u \gets$ \Call{Dequeue}{$Q$}
-        \For{each neighbor $v$ of $u$ in $G$}
-            \If{$v$ is not visited}
-                \State Enqueue $v$ into $Q$
-                \State Mark $v$ as visited
+\Function{BFS}{problem}
+    \State queue $\gets$ Queue()
+    \State visited $\gets \emptyset$
+    \State node $\gets$ problem.getStartState()
+    \State queue.push((node, [ ]))
+    
+    \While{not queue.isEmpty()}
+        \State position, path $\gets$ queue.pop()
+        \If{position $\notin$ visited}
+            \State visited.add(position)
+            \If{problem.isGoalState(position)}
+                \Return path
             \EndIf
-        \EndFor
-    \EndWhile
-\EndProcedure
+            \For{(successor, direction, cost) in problem.getSuccessors(position)}
+                \If{successor $\notin$ visited}
+                    \State queue.push((successor, path + [direction]))
+                \EndIf
+            \EndFor
+        \EndIf
+    \EndWhile \\
+    \Return [ ]
+\EndFunction
 \end{algorithmic}
 \end{algorithm}
+\par Complexitatea algoritmului în:
+
+\begin{itemize}
+    \item Timp: $O(b^{d+1})$ unde $b$ este factorul de ramificare și $d$ este adâncimea la care se găsește prima soluție
+    \item Spațiu: $O(b^d)$ - trebuie să stocheze toate nodurile de pe nivelul curent și următorul nivel
+\end{itemize}
+\par BFS este optimal, spațiul fiind o mare problemă
+\par Avantaje:
+\begin{itemize}
+	\item Garantează găsirea celei mai scurte căi până la soluție
+	\item Explorează sistematic toate nodurile de pe un nivel înainte de a trece la următorul
+	\item Potrivit pentru spații de căutare cu factor de ramificare mic și soluții la adâncimi mici
+\end{itemize}
+
+\par Dezavantaje:
+\begin{itemize}
+	\item Consumă mai multă memorie decât DFS deoarece trebuie să stocheze toate nodurile de pe un nivel
+	\item Nu este potrivit pentru probleme cu ramuri infinite
+	\item Poate fi ineficient pentru spații de căutare mari cu soluții la adâncimi mari
+\end{itemize}
+
+\pagebreak
+
 \section{Informed search}
 % q4 - q8 din project 1
 \subsection{Question 4 - A* search  algorithm}
 % q4 din project 1
+\begin{algorithm}
+\caption{A* Search}
+\begin{algorithmic}[1]
+\Function{AStarSearch}{problem, heuristic}
+    \State start $\gets$ problem.getStartState()
+    \State queue $\gets$ PriorityQueue()
+    \State bestCost $\gets$ \{start: 0\}
+    \State queue.push((start, []), 0)
+    
+    \While{not queue.isEmpty()}
+        \State pos, path $\gets$ queue.pop()
+        \If{problem.isGoalState(pos)}
+            \Return path
+        \EndIf
+        
+        \For{(successor, direction, cost) in problem.getSuccessors(pos)}
+            \If{bestCost[pos] + cost < bestCost.setdefault(successor, $\infty$)}
+                \State bestCost[successor] $\gets$ cost + bestCost[pos]
+                \State newCost $\gets$ bestCost[successor] + heuristic(successor, problem)
+                \State queue.update((successor, path + [direction]), newCost)
+            \EndIf
+        \EndFor
+    \EndWhile \\
+	\Return [ ]
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\par Implementare si Structuri de Date:
+\begin {itemize}
+	\item Coadă cu priorități (PriorityQueue) pentru selectarea nodului cu cost minim
+	\item Menține un dicționar pentru costurile minime până la fiecare nod
+	\item Funcția de prioritate f(n) = g(n) + h(n), unde:
+	\begin {itemize}
+		\item g(n) este costul real până la nodul n
+		\item h(n) este euristica Manhattan pentru distanța estimată până la țintă
+	\end {itemize}
+\end {itemize} 
+
+\par Euristica Manhattan:
+
+\begin {itemize}
+	\item Calculează $|x1-x2|$ + $|y1-y2|$ între poziția curentă și pozitia urmatoare
+	\item Este admisibilă (nu supraestimeaza costul real) si consistenta (respecta inegalitatea triunghiului)
+\end {itemize}
+
+\par Complexitate:
+\begin {itemize}
+	\item Timp: $O(b^d)$ 
+	\item Spațiu: $O(b^d)$ - trebuie să păstreze în memorie nodurile explorate
+\end {itemize}
+
+\par Avantaje:
+\begin {itemize}
+	\item Garantează găsirea drumului optim când euristica este admisibilă
+	\item Mai eficient decât BFS/DFS prin folosirea euristicii pentru ghidarea căutării
+	\item Explorează mai puține noduri decât algoritmii de căutare neinformată
+\end {itemize}
+
+\par Dezavantaje:
+\begin {itemize}
+	\item Spatiul utilizat
+	\item Implementarea este mai complexă decât BFS/DFS
+\end {itemize}
+
+\pagebreak
 
 \section{Adversarial search}
 % q1-q3 din project2
