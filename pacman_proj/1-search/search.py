@@ -95,14 +95,14 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     visited = set()
     stack.push((node, []))
     while not stack.isEmpty():
-        pos, path = stack.pop()
-        if pos not in visited:
-            visited.add(pos)
-            if problem.isGoalState(pos):
+        position, path = stack.pop()
+        if position not in visited:
+            visited.add(position)
+            if problem.isGoalState(position):
                 return path
-            for position, direction, cost in problem.getSuccessors(pos):
-                if position not in visited:
-                    stack.push((position, path + [direction]))
+            for successor, direction, cost in problem.getSuccessors(position):
+                if successor not in visited:
+                    stack.push((successor, path + [direction]))
     return []
 
 
@@ -114,14 +114,14 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     visited = set()
     queue.push((node, []))
     while not queue.isEmpty():
-        pos, path = queue.pop()
-        if pos not in visited:
-            visited.add(pos)
-            if problem.isGoalState(pos):
+        position, path = queue.pop()
+        if position not in visited:
+            visited.add(position)
+            if problem.isGoalState(position):
                 return path
-            for position, direction, cost in problem.getSuccessors(pos):
-                if position not in visited:
-                    queue.push((position, path + [direction]))
+            for successor, direction, cost in problem.getSuccessors(position):
+                if successor not in visited:
+                    queue.push((successor, path + [direction]))
     return []
 
 
@@ -132,14 +132,14 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     visited = set()
     queue.update((node, [], 0), 0)
     while not queue.isEmpty():
-        pos, path, sum = queue.pop()
-        if pos not in visited:
-            visited.add(pos)
-            if problem.isGoalState(pos):
+        position, path, sum = queue.pop()
+        if position not in visited:
+            visited.add(position)
+            if problem.isGoalState(position):
                 return path
-            for position, direction, cost in problem.getSuccessors(pos):
-                if position not in visited:
-                    queue.update((position, path + [direction], sum + cost), sum + cost)
+            for successor, direction, cost in problem.getSuccessors(position):
+                if successor not in visited:
+                    queue.update((successor, path + [direction], sum + cost), sum + cost)
     return []
 
 
