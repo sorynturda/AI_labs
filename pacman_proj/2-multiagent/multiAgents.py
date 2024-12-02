@@ -192,13 +192,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
         legalActions = gameState.getLegalActions(0)
-        def minimax(agent, depth, gameState, alfa, beta):
+        def alfabeta(agent, depth, gameState, alfa, beta):
             if gameState.isLose() or gameState.isWin() or depth == self.depth:  # conditia de oprire
                 return self.evaluationFunction(gameState)
             if agent == 0:  # max pentru pacman, urmatorul agent are tot timpul indexul 1
                 mx = -float("inf")
                 for newState in gameState.getLegalActions(agent):
-                    mx = max(mx, minimax(1, depth, gameState.generateSuccessor(agent,newState), alfa,  beta))
+                    mx = max(mx, alfabeta(1, depth, gameState.generateSuccessor(agent,newState), alfa,  beta))
                     if mx > beta: 
                         return mx
                     alfa = max(alfa, mx)
@@ -209,7 +209,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 if not nextAgent: # adancimea creste cand se ajunge inapoi la pacman
                     depth += 1
                 for newState in gameState.getLegalActions(agent):
-                    mn = min(mn, minimax(nextAgent, depth, gameState.generateSuccessor(agent, newState), alfa, beta))
+                    mn = min(mn, alfabeta(nextAgent, depth, gameState.generateSuccessor(agent, newState), alfa, beta))
                     if mn < alfa:
                         return mn
                     beta = min(beta, mn)
@@ -220,7 +220,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         alfa, beta = -float("inf"), float("inf")
         best_action = Directions.SOUTH
         for action in gameState.getLegalActions(0):
-            utility = minimax(1, 0, gameState.generateSuccessor(0, action), alfa, beta)
+            utility = alfabeta(1, 0, gameState.generateSuccessor(0, action), alfa, beta)
             if utility > maximum:
                 maximum = utility
                 best_action = action
