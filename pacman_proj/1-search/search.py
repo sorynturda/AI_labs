@@ -164,7 +164,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
         for successor, direction, cost in problem.getSuccessors(pos):
             if bestCost[pos] + cost < bestCost.setdefault(successor, 1e9):
                 bestCost[successor] = cost + bestCost[pos]
-                queue.update((successor, path + [direction]), bestCost[pos] + cost + heuristic(successor, problem))
+                queue.update((successor, path + [direction]), bestCost[successor] + heuristic(successor, problem))
 
 
 # Abbreviations
