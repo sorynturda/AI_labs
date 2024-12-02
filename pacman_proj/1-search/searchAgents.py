@@ -379,7 +379,7 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    pos, visited = state
+    position, visited = state
     manhattan = []
 
     if visited == (True, True, True, True):
@@ -387,7 +387,7 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
     for i in range(4):
         if not visited[i]:
-            manhattan.append(util.manhattanDistance(corners[i], pos))
+            manhattan.append(util.manhattanDistance(corners[i], position))
     return max(manhattan)
 
 class AStarCornersAgent(SearchAgent):
@@ -491,14 +491,14 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     if len(foodPosition) == 1:
         return manhattanDistance(position, foodPosition[0])
 
-    closest_food_distance = 1e9
+    closest_food_distance = float("inf")
     for food in foodPosition:
         closest_food_distance = min(closest_food_distance, manhattanDistance(position, food))
 
     closest_food = foodPosition[0]
     while foodPosition:
         next_closest_food = foodPosition[0]
-        next_min_distance = 1e9
+        next_min_distance = float("inf")
 
         for food in foodPosition:
             current_distance = manhattanDistance(closest_food, food)

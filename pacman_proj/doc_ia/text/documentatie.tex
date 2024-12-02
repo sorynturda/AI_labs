@@ -1,12 +1,12 @@
 \section{Uninformed search}
-\subsection{Question 1 - Gasirea unui punct unde se afla mancare folosind Depth-First Search}
+\subsection{Question 1 - Finding a Fixed Food Dot using Depth-First Search}
 % definire cerinta
-\par Gasirea unui punct unde se afla mancare folosind Depth First Search
+\par Gasirea unui punct unde se afla mancare folosind Depth-First Search
 \par \textbf{Depth-First Search} este un algoritm utilizat pentru explorarea grafurilor sau arborilor. Scopul acestuia este de a traversa toate nodurile unui graf, urmărind o cale cât mai adâncă înainte de a reveni și a explora căile neexplorate.
 % prezentare algoritm/metoda
 
 \begin{algorithm}
-\caption{Depth First Search}
+\caption{Depth-First Search}
 \begin{algorithmic}[1]
 \Function{DFS}{problem}
     \State stack $\gets$ Stack()
@@ -64,7 +64,7 @@
 % + q3 din project 1
 
 \begin{algorithm}
-\caption{Breadth First Search}
+\caption{Breadth-First Search}
 \begin{algorithmic}[1]
 \Function{BFS}{problem}
     \State queue $\gets$ Queue()
@@ -113,9 +113,56 @@
 
 \pagebreak
 
+\subsection{Question 3 - Uniform Cost Search}
+
+\par Algoritmul Uniform Cost Search aplicat pe un graf găsește calea cu cel mai mic cost între un nod inițial și un nod țintă. Este o variantă a algoritmului Breadth-First Search, dar ia în considerare costurile asociate cu muchiile, fiind o metodă de cautare informată.
+
+\begin{algorithm}
+\caption{Uniform Cost Search}
+\begin{algorithmic}[1]
+\Function{UniformCostSearch}{problem}
+    \State pq $\gets$ PriorityQueue()
+    \State visited $\gets \emptyset$
+    \State node $\gets$ problem.getStartState()
+    \State pq.update((node, [ ], 0), 0)
+    
+    \While{not pq.isEmpty()}
+        \State position, path, total\_cost $\gets$ pq.pop()
+        \If{position $\notin$ visited}
+            \State visited.add(position)
+            \If{problem.isGoalState(position)}
+                \Return path
+            \EndIf
+            \For{(successor, direction, cost) in problem.getSuccessors(position)}
+                \If{successor $\notin$ visited}
+                    \State pq.update((successor, path + [direction], total\_cost + cost), total\_cost + cost)
+                \EndIf
+            \EndFor
+        \EndIf
+    \EndWhile \\
+    \Return [ ]
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\par Implementare:
+\begin {itemize}
+	\item Foloseste o cu priorități pentru alegerea frontierei
+	\item Intr-un set se pastrează toate nodurile vizitate
+\end {itemize}
+
+\par Complexitatea spatiului si a timpului paote fi mai mare decat cea a cautarii in adancime (DFS). Algoritmul este optimal, iar completitudinea este garantata daca costul fiecarei actiuni este strict pozitiv.
+
+
+\pagebreak
+
 \section{Informed search}
 % q4 - q8 din project 1
 \subsection{Question 4 - A* search  algorithm}
+
+\par A* este un algoritm de căutare informată/euristică
+Combină căutarea bazată pe cost (ca în UCS) cu o estimare euristică a distanței până la destinație. Este asemenea dependent de euristica folosită.
+
 % q4 din project 1
 \begin{algorithm}
 \caption{A* Search}
@@ -159,14 +206,13 @@
 \par Euristica Manhattan:
 
 \begin {itemize}
-	\item Calculează $|x1-x2|$ + $|y1-y2|$ între poziția curentă și pozitia urmatoare
+	\item Calculează $|x_1-x_2|$ + $|y_1-y_2|$ între poziția curentă și pozitia urmatoare
 	\item Este admisibilă (nu supraestimeaza costul real) si consistenta (respecta inegalitatea triunghiului)
 \end {itemize}
 
 \par Complexitate:
 \begin {itemize}
-	\item Timp: $O(b^d)$ 
-	\item Spațiu: $O(b^d)$ - trebuie să păstreze în memorie nodurile explorate
+	\item Timp si spațiu: $O(b^d)$ - trebuie să păstreze în memorie nodurile explorate
 \end {itemize}
 
 \par Avantaje:
@@ -183,8 +229,34 @@
 \end {itemize}
 
 \pagebreak
+\subsection {Question 5 - Găsirea tuturor colțurilor}
+\par Pentru fiecare colț care nu a fost parcurs se calculeaza distanta Manhattan pană acolo. Se alege distanța minimă, prin urmare colțul cu acea distanță se va parcurge.
 
 \section{Adversarial search}
 % q1-q3 din project2
 \subsection{Question 9 - Improve the ReflexAgent} 
+
+\par Funcția de evaluare alege optim următoarea mâncare spre care va avansa Pacman în funcție de poziția fantomelor. Se află distanța Manhattan pentru mâncare si fantomă. Dacă distanța până la fantomă e foarte aproape (distanță de o mutare), Pacman nu se va apropia de fantomă (se returnează o valoare foarte mică e.g. $	- \infty$
+\par Pacman va căuta tot timpul mâncarea cea mai apropiată de el. Se returnează $1 / distanta$ deoarece scorul este invers proporțional cu distanța până la mâncare. 
+
+\begin{algorithm}
+\caption{Evaluation Function}
+\begin{algorithmic}[1]
+\Procedure{evaluationFunction}{$self$, $currentGameState$, $action$}
+    \State $minFoodDist \gets \infty$
+    \For{$food \in newFood.asList()$}
+        \State $minFoodDist \gets \min(minFoodDist, manhattanDistance(food, newPos))$
+    \EndFor
+    \For{$ghostState \in newGhostStates$}
+        \If{$manhattanDistance(ghostState.getPosition(), newPos) < 2$}
+            \Return $-\infty$
+        \EndIf
+    \EndFor
+    \State \Return $1 / minFoodDist + successorGameState.getScore()$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 % q1 din project 2
+\pagebreak
+\subsection{Question 10 - Minimax}
+\subsection{Question 11 - $\alpha - \beta$ Pruning}  
