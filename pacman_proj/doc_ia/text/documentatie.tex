@@ -36,11 +36,11 @@
 % optional explicatii suplimentare cod
 
 % comentarii/observatii asupra performantei/rezultatelor/complexitatii/algoritmului
-\par Complexitatea algoritmului în:
+\par Complexitatea algoritmului:
 
 \begin{itemize}
-    \item Timp: $O(b^m)$ unde b este factorul de ramificare (numarul mediu de succesori) si d este adancimea maxima a arborelui
-    \item Spațiu: $O(b*m)$ - trebuie sa stocam nodurile de pe calea curenta plus nodurile de pe acelasi nivel 
+    \item Timp: $O(b^d)$ unde b este factorul de ramificare (numarul mediu de succesori) si d este adancimea maxima a arborelui
+    \item Spațiu: $O(b*d)$ - trebuie sa stocam nodurile de pe calea curenta plus nodurile de pe acelasi nivel 
 \end{itemize}
 
 \par Avantaje:
@@ -90,7 +90,7 @@
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
-\par Complexitatea algoritmului în:
+\par Complexitatea algoritmului:
 
 \begin{itemize}
     \item Timp: $O(b^{d+1})$ unde $b$ este factorul de ramificare și $d$ este adâncimea la care se găsește prima soluție
@@ -180,7 +180,7 @@ Combină căutarea bazată pe cost (ca în UCS) cu o estimare euristică a dista
         \EndIf
         
         \For{(successor, direction, cost) in problem.getSuccessors(pos)}
-            \If{bestCost[pos] + cost < bestCost.setdefault(successor, $\infty$)}
+            \If{bestCost[pos] + cost $<$ bestCost.setdefault(successor, $\infty$)}
                 \State bestCost[successor] $\gets$ cost + bestCost[pos]
                 \State newCost $\gets$ bestCost[successor] + heuristic(successor, problem)
                 \State queue.update((successor, path + [direction]), newCost)
@@ -341,7 +341,7 @@ Combină căutarea bazată pe cost (ca în UCS) cu o estimare euristică a dista
         
         \For{food in foodPositions}
             \State currentDistance $\gets$ manhattanDistance(closestFood, food)
-            \If{currentDistance < nextMinDistance}
+            \If{currentDistance $<$ nextMinDistance}
                 \State nextMinDistance $\gets$ currentDistance
                 \State nextClosestFood $\gets$ food
             \EndIf
@@ -368,6 +368,22 @@ Combină căutarea bazată pe cost (ca în UCS) cu o estimare euristică a dista
 
 \pagebreak
 
+\subsection {Question 8 - Suboptimal Search}
+
+\begin{algorithm}
+\caption{findPathToClosestDot}
+\begin{algorithmic}[1]
+\Function{findPathToClosestDot}{gameState}
+    \State problem $\gets$ AnyFoodSearchProblem(gameState)
+    \State \Return breadthFirstSearch(problem)
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\par Funcția găseste cel mai scurt drum până la un punct cu mâncare. BFS va găsi garantat drumul cel mai scurt până la cea mai apropiată bucată de mâncare.
+
+
+\pagebreak
 \section{Adversarial search}
 % q1-q3 din project2
 \subsection{Question 9 - Improve the ReflexAgent} 
@@ -395,4 +411,140 @@ Combină căutarea bazată pe cost (ca în UCS) cu o estimare euristică a dista
 % q1 din project 2
 \pagebreak
 \subsection{Question 10 - Minimax}
+
+\begin{algorithm}
+\caption{getAction}
+\begin{algorithmic}[1]
+\Function{getAction}{gameState}
+    \State maximum $\gets$ $-\infty$
+    \State bestAction $\gets$ SOUTH
+    \For{action in gameState.getLegalActions(0)}
+        \State currentScire $\gets$ \Call{minimax}{1, 0, gameState.generateSuccessor(0, action)}
+        \If{currentScire $>$ maximum}
+            \State maximum $\gets$ currentScire
+            \State bestAction $\gets$ action
+        \EndIf
+    \EndFor
+    \State \Return bestAction
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\par Algoritmul Minimax este o metodă clasică pentru luarea deciziilor în jocurile cu sumă nulă și informații perfecte, în cazul de față: Pacman.
+
+\par Complexitatea algoritmului:
+
+\begin{itemize}
+    \item Timp: $O(b^d)$
+    \item Spațiu: $O(b*d)$
+\end{itemize}
+
+\par Avantaje:
+\begin {itemize}
+	\item Găsește întotdeauna cea mai bună mișcare până la adâncimea dată
+	\item Joacă perfect împotriva fantomelor care joacă optimal
+\end {itemize}
+\par Factori care influențează complexitatea
+\begin{itemize}
+	\item Numărul de fantome (crește factorul de ramificare $b$)
+	\item Dimensiunea labirintului
+\end{itemize}
+
+\begin{algorithm}
+\caption{minimax}
+\begin{algorithmic}[1]
+\Function{minimax}{agent, depth, gameState}
+    \If{gameState.isLose() \textbf{or} gameState.isWin() \textbf{or} depth = self.depth}
+        \State \Return evaluationFunction(gameState)
+    \EndIf
+    
+    \If{agent = 0} \Comment{Pacman's turn (MAX player)}
+        \State maxValue $\gets$ $-\infty$
+        \For{action in gameState.getLegalActions(agent)}
+            \State successor $\gets$ gameState.generateSuccessor(agent, action)
+            \State value $\gets$ \Call{minimax}{1, depth, successor}
+            \State maxValue $\gets$ max(maxValue, value)
+        \EndFor
+        \State \Return maxValue
+    \Else \Comment{Ghost's turn (MIN player)}
+        \State minValue $\gets$ $\infty$
+        \State nextAgent $\gets$ (agent + 1) \textbf{mod} gameState.getNumAgents()
+        \If{nextAgent = 0} \Comment{Back to Pacman}
+            \State depth $\gets$ depth + 1
+        \EndIf
+        \For{action in gameState.getLegalActions(agent)}
+            \State successor $\gets$ gameState.generateSuccessor(agent, action)
+            \State value $\gets$ \Call{minimax}{nextAgent, depth, successor}
+            \State minValue $\gets$ min(minValue, value)
+        \EndFor
+        \State \Return minValue
+    \EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\pagebreak
 \subsection{Question 11 - $\alpha - \beta$ Pruning}  
+
+\begin{algorithm}
+\caption{getAction with Alpha-Beta Pruning}
+\begin{algorithmic}[1]
+\Function{getAction}{gameState}
+    \State maximum $\gets$ $-\infty$
+    \State $\alpha, \beta \gets -\infty, \infty$
+    \State bestAction $\gets$ SOUTH
+    \For{action in gameState.getLegalActions(0)}
+        \State currentScore $\gets$ \Call{alfabeta}{1, 0, gameState.generateSuccessor(0, action), $\alpha$, $\beta$}
+        \If{currentScore $>$ maximum}
+            \State maximum $\gets$ currentScore
+            \State bestAction $\gets$ action
+        \EndIf
+        \State $\alpha \gets$ max($\alpha$, maximum)
+    \EndFor
+    \State \Return bestAction
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\par Algoritmul \textbf{Alpha-Beta Pruning} este o optimizare a algoritmului Minimax, care reduce numărul de stări evaluate fără a afecta rezultatul final. În loc să evalueze toate nodurile arborelui, Alpha-Beta ignoră ramurile care nu influențează decizia finală. Performanța optimă este atinsă atunci când nodurile sunt explorate într-o ordine bună. Dacă ordinea explorării este ideală, complexitatea se reduce la $O(b^{d/2})$. In caz contrar, performanța este similară cu Minimax.\\Alpha-Beta produce același rezultat ca Minimax fară să influențeze calitatea deciziilor.
+
+\begin{algorithm}
+\caption{alfabeta}
+\begin{algorithmic}[1]
+\Function{alfabeta}{agent, depth, gameState, $\alpha$, $\beta$}
+    \If{gameState.isLose() \textbf{or} gameState.isWin() \textbf{or} depth = self.depth}
+        \State \Return evaluationFunction(gameState)
+    \EndIf
+    
+    \If{agent = 0} \Comment{Pacman's turn (MAX player)}
+        \State value $\gets$ $-\infty$
+        \For{action in gameState.getLegalActions(agent)}
+            \State successor $\gets$ gameState.generateSuccessor(agent, action)
+            \State value $\gets$ max(value, \Call{alfabeta}{1, depth, successor, $\alpha$, $\beta$})
+            \If{value $>$ $\beta$}
+                \State \Return value \Comment{Beta cutoff}
+            \EndIf
+            \State $\alpha \gets$ max($\alpha$, value)
+        \EndFor
+        \State \Return value
+        
+    \Else \Comment{Ghost's turn (MIN player)}
+        \State value $\gets$ $\infty$
+        \State nextAgent $\gets$ (agent + 1) \textbf{mod} gameState.getNumAgents()
+        \If{nextAgent = 0}
+            \State depth $\gets$ depth + 1
+        \EndIf
+        \For{action in gameState.getLegalActions(agent)}
+            \State successor $\gets$ gameState.generateSuccessor(agent, action)
+            \State value $\gets$ min(value, \Call{alfabeta}{nextAgent, depth, successor, $\alpha$, $\beta$})
+            \If{value $<$ $\alpha$}
+                \State \Return value \Comment{Alpha cutoff}
+            \EndIf
+            \State $\beta \gets$ min($\beta$, value)
+        \EndFor
+        \State \Return value
+    \EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+

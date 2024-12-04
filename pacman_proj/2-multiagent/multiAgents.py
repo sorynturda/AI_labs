@@ -172,9 +172,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
         maximum = float("-inf")
         best_action = Directions.SOUTH
         for action in gameState.getLegalActions(0):
-            utility = minimax(1, 0, gameState.generateSuccessor(0, action))
-            if utility > maximum:
-                maximum = utility
+            currentScore = minimax(1, 0, gameState.generateSuccessor(0, action))
+            if currentScore > maximum:
+                maximum = currentScore
                 best_action = action
 
         return best_action
@@ -220,9 +220,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         alfa, beta = -float("inf"), float("inf")
         best_action = Directions.SOUTH
         for action in gameState.getLegalActions(0):
-            utility = alfabeta(1, 0, gameState.generateSuccessor(0, action), alfa, beta)
-            if utility > maximum:
-                maximum = utility
+            currentScore = alfabeta(1, 0, gameState.generateSuccessor(0, action), alfa, beta)
+            if currentScore > maximum:
+                maximum = currentScore
                 best_action = action
             alfa = max(alfa, maximum) # actualizare alfa deoarece suntem in cazul: pacman alege
         return best_action
