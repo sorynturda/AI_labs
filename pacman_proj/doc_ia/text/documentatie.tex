@@ -199,7 +199,7 @@ Combină căutarea bazată pe cost (ca în UCS) cu o estimare euristică a dista
 	\item Funcția de prioritate f(n) = g(n) + h(n), unde:
 	\begin {itemize}
 		\item g(n) este costul real până la nodul n
-		\item h(n) este euristica Manhattan pentru distanța estimată până la țintă
+		\item h(n) este euristica manhattan pentru distanța estimată până la țintă
 	\end {itemize}
 \end {itemize} 
 
@@ -230,13 +230,149 @@ Combină căutarea bazată pe cost (ca în UCS) cu o estimare euristică a dista
 
 \pagebreak
 \subsection {Question 5 - Găsirea tuturor colțurilor}
-\par Pentru fiecare colț care nu a fost parcurs se calculeaza distanta Manhattan pană acolo. Se alege distanța minimă, prin urmare colțul cu acea distanță se va parcurge.
+\par Pentru fiecare colț care nu a fost parcurs se calculeaza distanta manhattan pană acolo. Se alege distanța minimă, prin urmare colțul cu acea distanță se va parcurge.
+
+\begin{algorithm}
+\caption{getStartState}
+\begin{algorithmic}[1]
+\Function{getStartState}{}
+    \State \Return (startingPosition, (False, False, False, False))
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\par Inițial, niciun colț nu este vizitat. Tupla returnata de functia \textbf{getStartState} specifică acest lucru.
+
+\begin{algorithm}
+\caption{isGoalState}
+\begin{algorithmic}[1]
+\Function{isGoalState}{state}
+    \State position, visitedCorners $\gets$ state
+    \State \Return visitedCorners = (True, True, True, True)
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\par \textbf{isGoalState} verifică dacă toate colțurile au fost parcurse de Pacman
+
+\begin{algorithm}
+\caption{getSuccessors}
+\begin{algorithmic}[1]
+\Function{getSuccessors}{state}
+    \State successors $\gets$ empty list
+    \State position, visitedCorners $\gets$ state
+    \State x, y $\gets$ position
+    \For{action in [NORTH, SOUTH, EAST, WEST]}
+        \State dx, dy $\gets$ directionToVector(action)
+        \State nextX $\gets$ x + dx
+        \State nextY $\gets$ y + dy
+        \State nextPos $\gets$ (nextX, nextY)
+        \If{not walls[nextX][nextY]}
+            \State newVisitedCorners $\gets$ list(visitedCorners)
+            \For{i in range(4)}
+                \If{corners[i] = nextPos}
+                    \State newVisitedCorners[i] $\gets$ True
+                \EndIf
+            \EndFor
+            \State cost $\gets$ 1
+            \State Add ((nextPos, tuple(newVisitedCorners)), action, cost) to successors
+        \EndIf
+    \EndFor
+    \State \Return successors
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\pagebreak
+
+\subsection {Question 6 - Corners Problem: Heuristic}
+
+\begin{algorithm}
+\caption{cornersHeuristic}
+\begin{algorithmic}[1]
+\Function{cornersHeuristic}{state, problem}
+    \State position, visitedCorners $\gets$ state
+    \If{visitedCorners = (True, True, True, True)}
+        \State \Return 0
+    \EndIf
+    \State manhattanDistances $\gets$ empty list
+    \For{i in range(4)}
+        \If{not visitedCorners[i]}
+            \State distance $\gets$ manhattanDistance(corners[i], position)
+            \State Add distance to manhattanDistances
+        \EndIf
+    \EndFor
+    \State \Return max(manhattanDistances)
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\par Pentru fiecare colț nevizitat, se calculează distanța manhattan si se alege cea mai mare dintre toate.
+
+\pagebreak
+
+\subsection {Question 7 - Eating All The Dots}
+
+\begin{algorithm}
+\caption{foodHeuristic}
+\begin{algorithmic}[1]
+\Function{foodHeuristic}{state, problem}
+    \State position, foodGrid $\gets$ state
+    \State foodPositions $\gets$ foodGrid.asList()
+    \State totalDistance $\gets$ 0
+    
+    \If{length(foodPositions) = 0}
+        \State \Return 0
+    \EndIf
+    
+    \If{length(foodPositions) = 1}
+        \State \Return manhattanDistance(position, foodPositions[0])
+    \EndIf
+    
+    \State closestFoodDistance $\gets$ $\infty$
+    \For{food in foodPositions}
+        \State closestFoodDistance $\gets$ min(closestFoodDistance, manhattanDistance(position, food))
+    \EndFor
+    
+    \State closestFood $\gets$ foodPositions[0]
+    \While{foodPositions is not empty}
+        \State nextClosestFood $\gets$ foodPositions[0]
+        \State nextMinDistance $\gets$ $\infty$
+        
+        \For{food in foodPositions}
+            \State currentDistance $\gets$ manhattanDistance(closestFood, food)
+            \If{currentDistance < nextMinDistance}
+                \State nextMinDistance $\gets$ currentDistance
+                \State nextClosestFood $\gets$ food
+            \EndIf
+        \EndFor
+        
+        \State closestFood $\gets$ nextClosestFood
+        \State totalDistance $\gets$ totalDistance + nextMinDistance
+        \State Remove nextClosestFood from foodPositions
+    \EndWhile
+    
+    \State \Return closestFoodDistance + totalDistance
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\par La început se află distanța minimă până la cea mai apropiată mâncare folosind distanța manhattan. Apoi, se estimează o distanță totală pentru colectarea restului de mâncare. Cu alte cuvinte se construieste un drum minim ce leagă toate punctele cu mâncare: 
+\begin{itemize}
+	\item Se caută următoarea cea mai apropiată bucată de mâncare rămasă
+	\item Se adaugă distanța până la aceasta la suma totală
+	\item Se elimină bucata de mâncare găsită din lista de căutare
+	\item Procesul continuă până când s-au găsit toate punctele cu mâncare
+\end{itemize}
+\par Rezultatul final este distanța până la cea mai apropiată mâncare + suma distanțelor minime între toate bucățile de mâncare. Euristica este admisibilă pentru că nu supraestimează niciodată costul real.
+
+\pagebreak
 
 \section{Adversarial search}
 % q1-q3 din project2
 \subsection{Question 9 - Improve the ReflexAgent} 
 
-\par Funcția de evaluare alege optim următoarea mâncare spre care va avansa Pacman în funcție de poziția fantomelor. Se află distanța Manhattan pentru mâncare si fantomă. Dacă distanța până la fantomă e foarte aproape (distanță de o mutare), Pacman nu se va apropia de fantomă (se returnează o valoare foarte mică e.g. $	- \infty$
+\par Funcția de evaluare alege optim următoarea mâncare spre care va avansa Pacman în funcție de poziția fantomelor. Se află distanța manhattan pentru mâncare si fantomă. Dacă distanța până la fantomă e foarte aproape (distanță de o mutare), Pacman nu se va apropia de fantomă (se returnează o valoare foarte mică e.g. $	- \infty$
 \par Pacman va căuta tot timpul mâncarea cea mai apropiată de el. Se returnează $1 / distanta$ deoarece scorul este invers proporțional cu distanța până la mâncare. 
 
 \begin{algorithm}
