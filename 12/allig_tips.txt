@@ -1,0 +1,36 @@
+
+
+%formulas which will be put in Mace4 options
+list(distinct).
+[a,b,c,d,e].     % equivalent to (a!=b & a!=c & b!=c).
+end_of_list.
+
+
+% Define the "right neighbor" relation among a,b,c,d,e
+ rightneighbor(a,b). 
+.....
+
+
+ rightneighbor(x,y)<->(x=a & y=b)|...
+ neighbor(x,y) <->...
+
+
+
+% Each house has at least one nationality, pet, drink, color, car.
+
+    austrian(x) | belgian(x) | czech(x) | dane(x) | estonian(x).
+    alligator(x) |...
+    ...
+
+% Each property applies to at most one house.
+
+    austrian(x) & austrian(y)& x!=y-> $F.
+    belgian(x) & ...
+    ...
+
+% The clues.
+
+    austrian(x) <-> amber(x).
+    cider(c).
+    ...
+   

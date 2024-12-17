@@ -1,0 +1,5 @@
+under_attack(country_us).
+politician(fdr).
+politician(x) -> isolationist(x) | interventionist(x).
+interventionist(x) -> declare_war(x).
+isolationist(x) & under_attack(country_us) -> declare_war(x).
