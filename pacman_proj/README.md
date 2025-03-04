@@ -13,3 +13,20 @@ This project explores search algorithms and adversarial agents in Artificial Int
 ## Usage
 Run the provided Python scripts to test various search strategies and agent behaviors.
 
+### Testing and Visualization Commands
+
+#### Minimax Agent (Depth 4)
+```sh
+python3 pacman.py -p MinimaxAgent -l minimaxClassic -a depth=4
+```
+
+#### A* Search with Manhattan Heuristic on Big Maze
+```sh
+python3 pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic
+```
+
+#### Alpha-Beta Pruning Agent (Depth 3) on Small Classic Map
+```sh
+python3 pacman.py -p AlphaBetaAgent -a depth=3 -l smallClassic
+```
+
